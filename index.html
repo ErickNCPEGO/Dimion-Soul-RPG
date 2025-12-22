@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dimion Soul | RPG Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        soul: {
+                            900: '#0f0c1a', // Dark background
+                            800: '#1a162e', // Card background
+                            700: '#2d2447', // Borders
+                            500: '#6366f1', // Primary Soul Color (Indigo)
+                            400: '#818cf8', // Lighter accent
+                            300: '#a5b4fc', // Text accent
+                            100: '#e0e7ff', // Text light
+                        },
+                        accent: {
+                            gold: '#ffd700',
+                            cyan: '#22d3ee',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Cinzel', 'serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #050505, #0f0c1a, #130f24);
+            color: #e2e8f0;
+        }
+        /* Glassmorphism utilities */
+        .glass {
+            background: rgba(26, 22, 46, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+        /* Chat Scrollbar */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: #4f46e5; 
+            border-radius: 3px;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #2d2447; 
+            border-radius: 4px;
+        }
+        /* Modal Transition */
+        #adventure-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #adventure-modal.open #modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="font-body min-h-screen flex flex-col selection:bg-soul-500 selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full z-50">
+        <div class="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-3 mb-4 md:mb-0 group cursor-pointer" onclick="showSection('home')">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-soul-500 to-accent-cyan flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.5)] group-hover:animate-pulse-slow">
+                    <span class="text-xl">🌌</span>
+                </div>
+                <div class="flex flex-col">
+                    <h1 class="font-heading text-2xl font-bold tracking-widest text-white text-glow">DIMION SOUL</h1>
+                    <span class="text-[10px] uppercase tracking-[0.2em] text-soul-300">RPG Companion</span>
+                </div>
+            </div>
+            
+            <div class="flex space-x-2 md:space-x-4 overflow-x-auto max-w-full pb-1 md:pb-0 items-center">
+                <button onclick="showSection('home')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Início</button>
+                <button onclick="showSection('races')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Raças</button>
+                <button onclick="showSection('classes')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Classes</button>
+                <button onclick="showSection('backgrounds')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap text-soul-300">Antecedentes</button>
+                <button onclick="showSection('adventures')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap text-accent-cyan">Aventuras</button>
+                <button onclick="showSection('campaigns')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Mestre</button>
+                <button onclick="showSection('dice')" class="ml-2 px-4 py-2 bg-gradient-to-r from-soul-500 to-indigo-700 rounded-lg text-white font-bold shadow-lg hover:shadow-indigo-500/50 transition transform hover:scale-105 active:scale-95 text-sm md:text-base whitespace-nowrap">Jogar Dados</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Spacer for fixed nav -->
+    <div class="h-24"></div>
+
+    <main class="container mx-auto px-6 py-8 flex-grow relative z-10">
+        
+        <!-- HOME SECTION -->
+        <section id="home" class="animate-fade-in flex flex-col items-center justify-center text-center min-h-[60vh]">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600 rounded-full opacity-[0.05] blur-[100px] -z-10 pointer-events-none"></div>
+            
+            <h2 class="font-heading text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-soul-300 to-soul-500 animate-float">
+                Crie sua Lenda
+            </h2>
+            <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mb-12 font-light">
+                O grimório definitivo para mestres e jogadores. Explore raças, classes detalhadas, aventuras oficiais e forje o destino do seu grupo.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl">
+                <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('races')">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">🧝</div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">Raças</h3>
+                    <p class="text-sm text-gray-400">Do nobre humano ao feroz meio-orc.</p>
+                </div>
+                <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('classes')">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">⚔️</div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">Classes</h3>
+                    <p class="text-sm text-gray-400">Paladinos, druidas e heróis lendários.</p>
+                </div>
+                 <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('adventures')">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">🗺️</div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">Aventuras</h3>
+                    <p class="text-sm text-gray-400">Campanhas oficiais para seu grupo.</p>
+                </div>
+                <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('campaigns')">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">🤖</div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">Mestre & IA</h3>
+                    <p class="text-sm text-gray-400">Ferramentas e Chat Inteligente.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RACES SECTION -->
+        <section id="races" class="hidden">
+            <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-heading text-4xl text-white">Linhagens Antigas</h2>
+                    <p class="text-soul-400 text-sm">Os povos que caminham sobre a terra</p>
+                </div>
+                <div class="text-3xl opacity-50">🌍</div>
+            </div>
+            <div id="races-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Javascript populated -->
+            </div>
+        </section>
+
+        <!-- CLASSES SECTION -->
+        <section id="classes" class="hidden">
+            <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-heading text-4xl text-white">Caminhos do Destino</h2>
+                    <p class="text-soul-400 text-sm">Escolha sua vocação e seus segredos arcanos</p>
+                </div>
+                <div class="text-3xl opacity-50">🛡️</div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 min-h-[600px]">
+                <!-- Sidebar -->
+                <div class="lg:w-1/4 h-[600px] overflow-y-auto pr-2 custom-scroll" id="class-list-container">
+                     <div class="space-y-2" id="class-list">
+                        <!-- JS Populated -->
+                     </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="lg:w-3/4">
+                    <div id="class-detail" class="glass h-full p-8 rounded-2xl relative overflow-hidden overflow-y-auto">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-soul-500 rounded-full blur-[100px] opacity-[0.15] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div class="flex h-full items-center justify-center text-gray-500">
+                            Selecione uma classe para ver seus segredos.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BACKGROUNDS SECTION -->
+        <section id="backgrounds" class="hidden">
+            <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-heading text-4xl text-white">Origens & Antecedentes</h2>
+                    <p class="text-soul-400 text-sm">Quem você era antes de se tornar uma lenda?</p>
+                </div>
+                <div class="text-3xl opacity-50">📜</div>
+            </div>
+            <div id="backgrounds-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Javascript populated -->
+            </div>
+        </section>
+
+        <!-- OFFICIAL ADVENTURES SECTION (NEW) -->
+        <section id="adventures" class="hidden">
+            <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-heading text-4xl text-white">Sagas Oficiais</h2>
+                    <p class="text-soul-400 text-sm">As campanhas mais perigosas de Faerûn e além</p>
+                </div>
+                <div class="text-3xl opacity-50">🗺️</div>
+            </div>
+            <div id="adventures-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <!-- CAMPAIGNS & CHAT (DM TOOLS) -->
+        <section id="campaigns" class="hidden">
+             <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-heading text-4xl text-white">Santuário do Mestre</h2>
+                    <p class="text-soul-400 text-sm">Ferramentas de criação e Oráculo IA</p>
+                </div>
+                <div class="text-3xl opacity-50">🕯️</div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 h-[600px]">
+                
+                <!-- Left Column: Tools -->
+                <div class="lg:col-span-1 space-y-6 flex flex-col h-full">
+                    <!-- Hook Generator -->
+                    <div class="glass p-6 rounded-2xl border-l-4 border-accent-cyan flex-1">
+                        <h3 class="font-heading text-xl text-white mb-2 flex items-center gap-2">
+                            <span class="text-accent-cyan">✦</span> Ganchos
+                        </h3>
+                        <div id="hook-display" class="bg-black/30 p-4 rounded-lg min-h-[80px] flex items-center justify-center text-center text-gray-300 text-sm italic mb-4 border border-white/5">
+                            "Aguardando inspiração..."
+                        </div>
+                        <button onclick="generateHook()" class="w-full py-2 rounded bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold transition border border-gray-700 hover:border-accent-cyan">
+                            Gerar Ideia
+                        </button>
+                    </div>
+
+                    <!-- NPC Generator -->
+                    <div class="glass p-6 rounded-2xl border-l-4 border-soul-500 flex-1">
+                        <h3 class="font-heading text-xl text-white mb-2 flex items-center gap-2">
+                            <span class="text-soul-500">✦</span> NPC Rápido
+                        </h3>
+                        <div id="npc-display" class="bg-black/30 p-4 rounded-lg min-h-[80px] mb-4 border border-white/5 space-y-1">
+                             <div class="flex justify-between text-xs border-b border-gray-800 pb-1">
+                                 <span class="text-gray-500">Nome</span>
+                                 <span class="text-white font-mono">-</span>
+                             </div>
+                             <div class="flex justify-between text-xs border-b border-gray-800 pb-1">
+                                 <span class="text-gray-500">Raça</span>
+                                 <span class="text-white font-mono">-</span>
+                             </div>
+                             <div class="flex justify-between text-xs">
+                                 <span class="text-gray-500">Alma</span>
+                                 <span class="text-white font-mono">-</span>
+                             </div>
+                        </div>
+                        <button onclick="generateNPC()" class="w-full py-2 rounded bg-gray-800 hover:bg-gray-700 text-white text-sm font-semibold transition border border-gray-700 hover:border-soul-500">
+                            Criar NPC
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: ChatGPT Interface -->
+                <div class="lg:col-span-2 glass rounded-2xl flex flex-col overflow-hidden border border-soul-500/30 shadow-[0_0_30px_rgba(99,102,241,0.1)]">
+                    <!-- Chat Header -->
+                    <div class="bg-soul-900/80 p-4 border-b border-white/10 flex justify-between items-center backdrop-blur-md">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 flex items-center justify-center text-white text-xl shadow-lg">🤖</div>
+                            <div>
+                                <h3 class="font-heading text-white font-bold">Oráculo do Mestre (AI)</h3>
+                                <p class="text-xs text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online</p>
+                            </div>
+                        </div>
+                        <button onclick="clearChat()" class="text-xs text-gray-500 hover:text-red-400 transition">Limpar Chat</button>
+                    </div>
+
+                    <!-- Chat Messages Area -->
+                    <div id="chat-messages" class="flex-grow p-6 overflow-y-auto chat-scroll bg-black/20 space-y-4">
+                        <!-- Welcome Message -->
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-lg">AI</div>
+                            <div class="bg-soul-800/80 p-3 rounded-2xl rounded-tl-none border border-white/5 text-sm text-gray-200 shadow-md">
+                                Olá, Mestre. Eu sou o Oráculo. Posso ajudar a criar encontros, descrever locais ou consultar regras. Minha conexão com os planos está ativa (API Conectada).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Area -->
+                    <div class="p-4 bg-soul-900/80 border-t border-white/10 backdrop-blur-md">
+                        <div class="flex gap-2">
+                            <input type="text" id="chat-input" placeholder="Pergunte ao Oráculo... (ex: Crie um enigma para uma porta mágica)" 
+                                   class="flex-grow bg-black/40 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-soul-500 focus:ring-1 focus:ring-soul-500 transition placeholder-gray-600"
+                                   onkeypress="handleChatKey(event)">
+                            <button onclick="sendMessage()" class="bg-soul-500 hover:bg-soul-600 text-white px-6 py-3 rounded-lg font-bold transition shadow-lg hover:shadow-soul-500/50 flex items-center">
+                                ➤
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DICE -->
+        <section id="dice" class="hidden flex flex-col items-center justify-center min-h-[60vh]">
+            <h2 class="font-heading text-4xl mb-12 text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500">Sala de Dados</h2>
+            
+            <div id="dice-container" class="relative w-48 h-48 flex items-center justify-center mb-16">
+                <div class="absolute inset-0 bg-soul-500 rounded-full blur-[60px] opacity-20 animate-pulse"></div>
+                <div id="dice-result" class="relative z-10 text-8xl font-heading font-bold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all duration-100">
+                    -
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                <button onclick="rollDice(4)" class="dice-btn w-16 h-16 rounded-xl bg-gray-800 border border-gray-700 hover:border-soul-500 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition text-gray-300 font-bold">D4</button>
+                <button onclick="rollDice(6)" class="dice-btn w-16 h-16 rounded-xl bg-gray-800 border border-gray-700 hover:border-soul-500 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition text-gray-300 font-bold">D6</button>
+                <button onclick="rollDice(8)" class="dice-btn w-16 h-16 rounded-xl bg-gray-800 border border-gray-700 hover:border-soul-500 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition text-gray-300 font-bold">D8</button>
+                <button onclick="rollDice(10)" class="dice-btn w-16 h-16 rounded-xl bg-gray-800 border border-gray-700 hover:border-soul-500 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition text-gray-300 font-bold">D10</button>
+                <button onclick="rollDice(12)" class="dice-btn w-16 h-16 rounded-xl bg-gray-800 border border-gray-700 hover:border-soul-500 hover:bg-gray-700 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] transition text-gray-300 font-bold">D12</button>
+                <button onclick="rollDice(20)" class="dice-btn w-16 h-16 rounded-xl bg-soul-600 border border-soul-400 hover:bg-soul-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.6)] transition text-white font-bold transform hover:scale-110">D20</button>
+            </div>
+            
+            <div id="history-log" class="mt-12 text-sm text-gray-500 font-mono min-h-[20px]"></div>
+        </section>
+
+    </main>
+    
+    <!-- Adventure Modal -->
+    <div id="adventure-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="glass w-full max-w-2xl m-4 rounded-2xl overflow-hidden transform scale-95 transition-transform duration-300 border border-soul-500/30 shadow-[0_0_50px_rgba(99,102,241,0.2)]" id="modal-content">
+            <div id="modal-header" class="h-40 bg-gradient-to-r from-soul-900 to-black relative flex items-center justify-center">
+                 <div class="absolute inset-0 bg-gradient-to-t from-soul-900 to-transparent"></div>
+                 <div class="text-8xl opacity-20 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">🐉</div>
+                <button onclick="closeAdventure()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500/80 transition z-20">✕</button>
+                <h3 id="modal-title" class="relative z-10 font-heading text-4xl font-bold text-white shadow-black drop-shadow-lg text-center px-4">Title</h3>
+            </div>
+            <div class="p-8 bg-soul-900/90">
+                <div class="flex justify-center gap-4 mb-6">
+                    <span id="modal-level" class="px-3 py-1 bg-soul-500/20 text-soul-300 text-sm font-bold rounded border border-soul-500/30">Level</span>
+                    <span id="modal-theme" class="px-3 py-1 bg-accent-cyan/10 text-accent-cyan text-sm font-bold rounded border border-accent-cyan/30">Theme</span>
+                </div>
+                <p id="modal-desc" class="text-gray-300 text-lg leading-relaxed mb-8 border-l-4 border-accent-cyan pl-4 text-justify">Description</p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="py-3 rounded bg-soul-600 hover:bg-soul-500 text-white font-bold transition shadow-lg hover:shadow-soul-500/50" onclick="alert('Link para loja simulado!')">🛒 Adquirir Livro</button>
+                    <button onclick="closeAdventure()" class="py-3 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 transition border border-gray-700">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-black py-8 border-t border-gray-900 mt-auto">
+        <div class="container mx-auto text-center">
+            <h4 class="font-heading text-lg text-white mb-2 tracking-widest">HYBRID STUDIOS</h4>
+            <p class="text-gray-600 text-sm">Desenvolvendo mundos digitais.</p>
+            <p class="text-gray-700 text-xs mt-4">Dimion Soul &copy; 2025. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC -->
+    <script>
+        // --- API & SYSTEM ---
+        const API_KEY = ""; // Key is provided by the environment
+
+        // --- DATABASE EXPANDED ---
+        
+        const adventures = [
+            {
+                title: "Curse of Strahd",
+                level: "1-10",
+                theme: "Terror Gótico",
+                color: "from-red-900 to-black",
+                desc: "Sob nuvens de tempestade furiosas, a figura do vampiro Conde Strahd von Zarovich se destaca nas antigas muralhas do Castelo Ravenloft. Uma aventura clássica de horror e mistério na terra amaldiçoada de Barovia."
+            },
+            {
+                title: "Tomb of Annihilation",
+                level: "1-11",
+                theme: "Selva & Exploração",
+                color: "from-green-800 to-yellow-900",
+                desc: "Algo maligno está aprisionando as almas dos mortos. Aventureiros devem viajar para as selvas de Chult, enfrentar dinossauros e mortos-vivos para encontrar a origem da Maldição da Morte."
+            },
+            {
+                title: "Lost Mine of Phandelver",
+                level: "1-5",
+                theme: "Fantasia Clássica",
+                color: "from-blue-800 to-gray-800",
+                desc: "A aventura introdutória perfeita. Explore a fronteira selvagem, lute contra goblins, descubra ruínas anãs perdidas e enfrente o misterioso Aranha Negra."
+            },
+            {
+                title: "Storm King's Thunder",
+                level: "1-10",
+                theme: "Gigantes & Épico",
+                color: "from-cyan-900 to-blue-900",
+                desc: "A Orning (ordem social) dos gigantes foi quebrada. Gigantes das colinas, do gelo, do fogo e das nuvens aterrorizam a Costa da Espada. Pequenos heróis devem deter ameaças colossais."
+            },
+            {
+                title: "Descent into Avernus",
+                level: "1-13",
+                theme: "Inferno & Redenção",
+                color: "from-orange-900 to-red-900",
+                desc: "Bem-vindo a Baldur's Gate, uma cidade de ambição e corrupção. O destino levará os heróis para Avernus, a primeira camada dos Nove Infernos, para salvar uma cidade inteira."
+            },
+            {
+                title: "Rime of the Frostmaiden",
+                level: "1-12",
+                theme: "Sobrevivência & Horror",
+                color: "from-blue-400 to-slate-900",
+                desc: "No Vale do Vento Gélido, a escuridão reina. Auril, a Donzela Gélida, lançou um inverno eterno sobre a região. Sobreviva ao frio, bestas terríveis e segredos enterrados no gelo."
+            }
+        ];
+
+        const backgrounds = [
+            {
+                name: "Acólito",
+                skill: "Intuição, Religião",
+                desc: "Você passou sua vida a serviço de um templo dedicado a um deus específico ou panteão de deuses. Você age como um intermediário entre o reino do sagrado e o mundo mortal, realizando ritos sagrados e oferecendo sacrifícios para guiar os fiéis.",
+                feature: "Abrigo dos Fiéis: Você comanda o respeito daqueles que compartilham sua fé, e pode realizar cerimônias religiosas."
+            },
+            {
+                name: "Criminoso",
+                skill: "Furtividade, Enganação",
+                desc: "Você é um criminoso experiente com um histórico de infringir a lei. Você gastou muito tempo entre outros criminosos e ainda tem contatos no submundo do crime. Você está muito mais perto do que a maioria das pessoas do lado escuro da vida.",
+                feature: "Contato Criminal: Você tem um contato confiável e seguro que age como seu intermediário para uma rede de outros criminosos."
+            },
+            {
+                name: "Artista",
+                skill: "Acrobacia, Performance",
+                desc: "Você prospera na frente de uma audiência. Você sabe como encantá-los, entretê-los e até inspirá-los. Sua arte pode ser música, dança, atuação ou qualquer outra forma de expressão que mova a alma.",
+                feature: "Por Demanda Popular: Você sempre pode encontrar um lugar para se apresentar. Recebe hospedagem e comida modesta de graça enquanto se apresentar."
+            },
+            {
+                name: "Herói do Povo",
+                skill: "Adestrar Animais, Sobrevivência",
+                desc: "Você vem de uma classe humilde, mas está destinado a muito mais. O povo de sua vila natal o considera seu campeão, e seu destino o chama para ficar contra os tiranos e monstros que ameaçam as pessoas comuns.",
+                feature: "Hospitalidade Rústica: Como você vem das fileiras do povo comum, você se encaixa entre eles com facilidade. Plebeus protegem você da lei."
+            },
+            {
+                name: "Nobre",
+                skill: "História, Persuasão",
+                desc: "Você entende de riqueza, poder e privilégio. Você carrega um título nobre, e sua família possui terras, cobra impostos e exerce influência política significativa. Sua vida tem sido confortável, cercada por servos e luxo.",
+                feature: "Posição de Privilégio: Graças à sua nobreza, as pessoas tendem a pensar o melhor de você. Você é bem-vindo na alta sociedade."
+            },
+            {
+                name: "Sábio",
+                skill: "Arcanismo, História",
+                desc: "Você passou anos aprendendo a tradição do multiverso. Você vasculhou manuscritos, estudou pergaminhos e ouviu os maiores especialistas nos assuntos que lhe interessam. Seus esforços fizeram de você um mestre em seus campos de estudo.",
+                feature: "Pesquisador: Quando você tenta aprender ou lembrar de uma informação, se você não souber, você sabe onde encontrar quem sabe."
+            },
+            {
+                name: "Soldado",
+                skill: "Atletismo, Intimidação",
+                desc: "A guerra tem sido sua vida pelo tempo que você se lembra. Você treinou na juventude, estudou o uso de armas e armaduras, aprendeu técnicas básicas de sobrevivência, incluindo como permanecer vivo no campo de batalha.",
+                feature: "Patente Militar: Você tem uma patente militar de sua carreira passada. Soldados leais à sua antiga organização militar ainda reconhecem sua autoridade."
+            },
+             {
+                name: "Forasteiro",
+                skill: "Atletismo, Sobrevivência",
+                desc: "Você cresceu nas terras selvagens, longe da civilização e do conforto da cidade e da tecnologia. Você testemunhou a migração de manadas maiores que florestas inteiras, sobreviveu a um clima mais extremo que qualquer habitante da cidade poderia compreender.",
+                feature: "Viajante: Você tem uma excelente memória para mapas e geografia, e você sempre pode encontrar comida e água para si e até mais cinco pessoas."
+            }
+        ];
+
+        const races = [
+            { 
+                name: "Humano", 
+                stat: "+1 em Todos", 
+                desc: "Os humanos são os mais adaptáveis e ambiciosos entre as raças comuns. Sua cultura e aparência variam enormemente, e sua curta expectativa de vida os impulsiona a alcançar a glória rapidamente. Eles fundam impérios, exploram o desconhecido e inovam constantemente.", 
+                type: "Comum",
+                traits: ["Versatilidade", "Aprendizado Rápido"]
+            },
+            { 
+                name: "Elfo", 
+                stat: "+2 Destreza", 
+                desc: "Seres mágicos de graça sobrenatural, vivendo em lugares de beleza etérea. Os elfos amam a natureza e a magia, a arte e a música. Eles vivem por séculos, o que lhes dá uma perspectiva distante e paciente sobre os eventos mundanos.", 
+                type: "Feérico",
+                traits: ["Visão no Escuro", "Sentidos Aguçados", "Ancestral Feérico"]
+            },
+            { 
+                name: "Anão", 
+                stat: "+2 Constituição", 
+                desc: "Reinos ricos em grandeza antiga, salões esculpidos nas raízes das montanhas. Os anões são guerreiros sólidos, mineradores e ferreiros de lendas. Eles valorizam a tradição, o clã e a honra acima de tudo, e possuem uma resistência natural a venenos e magia.", 
+                type: "Montanha",
+                traits: ["Resiliência Anã", "Treinamento em Combate", "Trabalho em Pedra"]
+            },
+            { 
+                name: "Halfling", 
+                stat: "+2 Destreza", 
+                desc: "Os pequenos halflings sobrevivem em um mundo cheio de criaturas maiores evitando serem notados ou, quando isso não é possível, evitando o conflito. Eles amam a paz, a comida, a lareira e o lar, mas sua sorte inata e curiosidade muitas vezes os levam a aventuras.", 
+                type: "Pequeno",
+                traits: ["Sortudo", "Bravura", "Agilidade Halfling"]
+            },
+            { 
+                name: "Draconato", 
+                stat: "+2 Força, +1 Carisma", 
+                desc: "Nascidos de dragões, como o nome proclama, os draconatos caminham orgulhosamente por um mundo que os recebe com admiração temerosa. Eles valorizam o clã acima da própria vida e carregam o sopro elemental de seus ancestrais dracônicos.", 
+                type: "Dracônico",
+                traits: ["Ataque de Sopro", "Resistência a Dano"]
+            },
+            { 
+                name: "Gnomo", 
+                stat: "+2 Inteligência", 
+                desc: "Um zumbido constante de atividade permeia as tocas onde os gnomos formam suas comunidades. Eles exploram o mundo com entusiasmo desenfreado, inventando, explorando e brincando. Sua magia inata é sutil, mas sua inteligência é afiada como navalha.", 
+                type: "Pequeno",
+                traits: ["Astúcia Gnômica", "Ilusionista Nato"]
+            },
+            { 
+                name: "Meio-Elfo", 
+                stat: "+2 Carisma, +1 em dois outros", 
+                desc: "Caminhando entre dois mundos, mas não pertencendo verdadeiramente a nenhum, os meio-elfos combinam a graça élfica e a inventividade humana. Eles são diplomatas naturais, errantes e aventureiros solitários com um talento inato para adaptação.", 
+                type: "Mestiço",
+                traits: ["Ancestral Feérico", "Versatilidade em Perícia"]
+            },
+            { 
+                name: "Meio-Orc", 
+                stat: "+2 Força, +1 Constituição", 
+                desc: "Com cicatrizes de batalha ostentadas como medalhas de orgulho, os meio-orcs buscam glória em combate. Eles sentem a fúria de Gruumsh em seu sangue, uma emoção poderosa que os impulsiona a feitos de grande força e resistência implacável.", 
+                type: "Mestiço",
+                traits: ["Ataque Selvagem", "Resistência Implacável"]
+            },
+            { 
+                name: "Tiefling", 
+                stat: "+2 Carisma, +1 Inteligência", 
+                desc: "Herdeiros de uma linhagem infernal antiga, os tieflings não têm reinos próprios, vivendo dentro de terras humanas onde são temidos. Sua aparência (chifres, caudas) denuncia seu legado, mas muitos superam o preconceito com astúcia ou charme sombrio.", 
+                type: "Planar",
+                traits: ["Legado Infernal", "Resistência ao Fogo", "Visão no Escuro"]
+            }
+        ];
+
+        const classes = {
+            "Bárbaro": {
+                desc: "Guerreiros primordiais que rejeitam a disciplina militar em favor de uma fúria selvagem.",
+                hd: "d12",
+                primary: "Força",
+                subs: [
+                    { name: "Caminho do Berserker", desc: "Para alguns bárbaros, a fúria é um meio para um fim. O Berserker não liga para sua própria segurança, entrando em um frenesi de sangue que aterroriza os inimigos." },
+                    { name: "Caminho do Totem", desc: "O Caminho do Totem Guerreiro é uma jornada espiritual. O bárbaro aceita um espírito animal como guia, protetor e inspiração, ganhando poderes sobrenaturais." },
+                    { name: "Guardião Ancestral", desc: "Esses bárbaros cultivam laços com espíritos de seus ancestrais, que lutam ao seu lado, protegendo seus aliados e punindo aqueles que ousam atacá-los." }
+                ],
+                icon: "🪓"
+            },
+            "Bardo": {
+                desc: "Mestres da canção e do discurso, tecendo magia através de suas performances.",
+                hd: "d8",
+                primary: "Carisma",
+                subs: [
+                    { name: "Colégio do Conhecimento", desc: "Bardos deste colégio sabem algo sobre quase tudo. Eles buscam coletar conhecimento de fontes raras e usam palavras para confundir inimigos ou inspirar aliados." },
+                    { name: "Colégio da Bravura", desc: "Bardos ousados que contam histórias de heróis do passado para inspirar uma nova geração, muitas vezes lutando na linha de frente ao lado dos guerreiros." },
+                    { name: "Colégio dos Sussurros", desc: "Lobos em pele de cordeiro, esses bardos usam seu conhecimento para descobrir segredos, chantagear e destruir reputações com uma palavra venenosa." }
+                ],
+                icon: "lute"
+            },
+            "Bruxo": {
+                desc: "Portadores de magia sombria derivada de pactos com entidades extraplanares.",
+                hd: "d8",
+                primary: "Carisma",
+                subs: [
+                    { name: "O Arquifada", desc: "Seu patrono é um lorde ou senhora das fadas, uma criatura de lendas cujos objetivos são inescrutáveis. Eles concedem magias de ilusão e encantamento." },
+                    { name: "O Corruptor (Infernal)", desc: "Você fez um pacto com um diabo dos Nove Infernos. Seu pacto lhe dá poder sobre o fogo e a habilidade de manipular a sorte, mas a que custo para sua alma?" },
+                    { name: "O Grande Antigo", desc: "Seu patrono é uma entidade misteriosa de um reino distante do espaço e tempo. Seus segredos perturbam a mente e concedem telepatia e loucura." }
+                ],
+                icon: "👁️"
+            },
+            "Clérigo": {
+                desc: "Guerreiros divinos e curandeiros que servem como intermediários dos deuses.",
+                hd: "d8",
+                primary: "Sabedoria",
+                subs: [
+                    { name: "Domínio da Vida", desc: "O foco deste domínio é preservar a vida. Clérigos da Vida são os curandeiros supremos, capazes de restaurar a vitalidade até dos ferimentos mais graves." },
+                    { name: "Domínio da Guerra", desc: "A guerra tem seus próprios deuses. Esses clérigos são campeões de batalha, abençoando armas e inspirando fúria sagrada em seus aliados." },
+                    { name: "Domínio da Luz", desc: "Promovendo ideais de renascimento e verdade, estes clérigos manipulam a luz divina para queimar os inimigos e banir a escuridão." }
+                ],
+                icon: "✨"
+            },
+            "Druida": {
+                desc: "Guardiões da natureza que assumem formas animais e controlam os elementos.",
+                hd: "d8",
+                primary: "Sabedoria",
+                subs: [
+                    { name: "Círculo da Terra", desc: "Druidas deste círculo são místicos e sábios que guardam conhecimentos antigos e ritos sagrados. Sua magia é influenciada pelo terreno onde foram iniciados." },
+                    { name: "Círculo da Lua", desc: "Guardiões ferozes das selvas, esses druidas se especializam na forma selvagem, transformando-se em bestas de combate poderosas como ursos e lobos gigantes." },
+                    { name: "Círculo do Pastor", desc: "Druidas que focam na proteção das bestas e espíritos feéricos. Eles invocam espíritos da natureza para proteger e fortalecer seus aliados." }
+                ],
+                icon: "🌿"
+            },
+            "Feiticeiro": {
+                desc: "Conjuradores que moldam magia através de talento inato ou linhagem sanguínea.",
+                hd: "d6",
+                primary: "Carisma",
+                subs: [
+                    { name: "Linhagem Dracônica", desc: "A magia de dragões antigos flui em suas veias. Você ganha escamas naturais, resistência elemental e a afinidade com o tipo de dragão do seu ancestral." },
+                    { name: "Magia Selvagem", desc: "Sua magia vem das forças do caos. Ela pode surgir com efeitos imprevisíveis, às vezes desastrosos, às vezes milagrosos, mas sempre espetaculares." },
+                    { name: "Alma da Tempestade", desc: "Você tem uma alma sintonizada com o poder elemental do ar. Você controla ventos, relâmpagos e trovões com a facilidade de quem respira." }
+                ],
+                icon: "🔥"
+            },
+            "Guerreiro": {
+                desc: "Mestres de armas e armaduras, versáteis e letais no campo de batalha.",
+                hd: "d10",
+                primary: "Força ou Destreza",
+                subs: [
+                    { name: "Campeão", desc: "O arquétipo clássico. Você foca no desenvolvimento da força física bruta e na perfeição mortal, aumentando drasticamente sua chance de acertos críticos." },
+                    { name: "Mestre de Batalha", desc: "Para você, o combate é uma ciência acadêmica. Você usa manobras e dados de superioridade para controlar o campo de batalha e comandar aliados." },
+                    { name: "Cavaleiro Arcano", desc: "Você combina a maestria marcial com o estudo da magia. Você usa feitiços de abjuração e evocação para aumentar sua defesa e ataque." }
+                ],
+                icon: "⚔️"
+            },
+            "Ladino": {
+                desc: "Especialistas em furtividade, precisão e em explorar as fraquezas inimigas.",
+                hd: "d8",
+                primary: "Destreza",
+                subs: [
+                    { name: "Ladrão", desc: "Especialista em latrocínio, furtividade e invasão. Você tem mãos rápidas, escala paredes como uma aranha e usa objetos mágicos com facilidade." },
+                    { name: "Assassino", desc: "Você foca na arte da morte. Mestre dos disfarces e venenos, seus ataques são devastadores quando você pega o inimigo de surpresa." },
+                    { name: "Trapaceiro Arcano", desc: "Alguns ladinos aprendem magia para melhorar suas habilidades. Você usa ilusões e encantamentos para distrair vítimas e ocultar seus rastros." }
+                ],
+                icon: "🗡️"
+            },
+            "Mago": {
+                desc: "Eruditos arcanos capazes de dobrar a realidade através de estudo intenso.",
+                hd: "d6",
+                primary: "Inteligência",
+                subs: [
+                    { name: "Escola de Evocação", desc: "Focada em criar efeitos elementais poderosos como frio, fogo e relâmpago. Você aprende a moldar suas magias para não ferir seus aliados." },
+                    { name: "Escola de Necromancia", desc: "Explora as forças da vida e da morte. Você pode drenar a vida de inimigos e, eventualmente, erguer os mortos para lutar sob seu comando." },
+                    { name: "Escola de Adivinhação", desc: "Busca entender o passado, presente e futuro. Você pode vislumbrar o destino e alterar rolagens de dados antes que elas aconteçam." }
+                ],
+                icon: "🔮"
+            },
+            "Monge": {
+                desc: "Mestres das artes marciais que canalizam a energia mística do Ki.",
+                hd: "d8",
+                primary: "Destreza e Sabedoria",
+                subs: [
+                    { name: "Caminho da Mão Aberta", desc: "O estilo clássico de artes marciais. Você manipula o ki inimigo para derrubá-los, empurrá-los ou impedi-los de reagir." },
+                    { name: "Caminho das Sombras", desc: "Ninjas e espiões. Você usa seu ki para se tornar invisível, teletransportar entre sombras e silenciar seus passos." },
+                    { name: "Quatro Elementos", desc: "Você aprende a canalizar seu ki para lançar feitiços elementais, dobrando fogo, água, terra e ar como extensões do seu corpo." }
+                ],
+                icon: "🥋"
+            },
+            "Paladino": {
+                desc: "Guerreiros sagrados jurados a cumprir votos de justiça e retidão.",
+                hd: "d10",
+                primary: "Força e Carisma",
+                subs: [
+                    { name: "Juramento de Devoção", desc: "O cavaleiro de armadura brilhante ideal. Você luta pela justiça, verdade e honra, com poderes focados em proteger os fracos e destruir mortos-vivos." },
+                    { name: "Juramento de Vingança", desc: "Você sacrificou sua própria pureza para punir os ímpios. Seu foco é puramente ofensivo, caçando e destruindo seus inimigos jurados." },
+                    { name: "Juramento dos Anciões", desc: "Um cavaleiro feérico que protege a beleza e a luz. Seus poderes são ligados à natureza, resistindo à magia e prendendo inimigos com vinhas." }
+                ],
+                icon: "🛡️"
+            },
+            "Patrulheiro": {
+                desc: "Caçadores implacáveis que protegem as fronteiras da civilização.",
+                hd: "d10",
+                primary: "Destreza e Sabedoria",
+                subs: [
+                    { name: "Caçador", desc: "O mestre do combate marcial contra ameaças específicas. Você aprende técnicas para lidar com hordas de inimigos ou abater gigantes solitários." },
+                    { name: "Mestre das Bestas", desc: "Você forma um vínculo místico com uma fera da natureza. Seu companheiro animal luta ao seu lado com inteligência e coordenação sobrenaturais." },
+                    { name: "Andarilho do Horizonte", desc: "Guardiões que protegem o mundo contra ameaças de outros planos. Você pode detectar portais e se teletransportar em combate." }
+                ],
+                icon: "🏹"
+            }
+        };
+
+        const hooks = [
+            "Um cometa roxo caiu nas montanhas e os mortos começaram a se levantar nas vilas próximas.",
+            "O taverneiro é na verdade um dragão dourado disfarçado que perdeu sua memória.",
+            "Uma guilda de ladrões roubou a sombra do Rei, e ele está morrendo sem ela.",
+            "A floresta sussurra nomes daqueles que vão morrer na próxima lua cheia.",
+            "Um espelho na mansão local mostra o reflexo de quem você era na vida passada.",
+            "Os ratos da cidade começaram a falar e exigem direitos iguais.",
+            "Uma ilha flutuante apareceu sobre a capital, chovendo cinzas douradas."
+        ];
+
+        // Functions
+        function showSection(id) {
+            document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(id);
+            target.classList.remove('hidden');
+            target.classList.add('animate-fade-in');
+            window.scrollTo(0, 0);
+        }
+
+        function initData() {
+            // Backgrounds
+            const bGrid = document.getElementById('backgrounds-grid');
+            backgrounds.forEach(bg => {
+                bGrid.innerHTML += `
+                    <div class="glass p-6 rounded-xl border-l-2 border-transparent hover:border-soul-500 transition duration-300 group flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                             <h3 class="font-heading text-xl font-bold text-white group-hover:text-soul-300 transition">${bg.name}</h3>
+                             <span class="text-xs text-accent-cyan font-mono border border-accent-cyan/20 bg-accent-cyan/5 px-2 py-1 rounded">Perícias: ${bg.skill}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed">${bg.desc}</p>
+                        <div class="mt-auto pt-4 border-t border-white/5 bg-black/20 -mx-6 -mb-6 p-4 rounded-b-xl">
+                            <span class="text-soul-300 font-bold text-xs uppercase tracking-wide block mb-1">Característica:</span>
+                            <p class="text-gray-300 text-sm italic">${bg.feature}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Races
+            const rGrid = document.getElementById('races-grid');
+            races.forEach(r => {
+                const traitsHtml = r.traits ? 
+                    `<div class="flex flex-wrap gap-2 mb-3">${r.traits.map(t => `<span class="text-[10px] uppercase px-2 py-1 bg-white/10 rounded text-soul-300 border border-soul-500/30">${t}</span>`).join('')}</div>` 
+                    : '';
+
+                rGrid.innerHTML += `
+                    <div class="glass p-6 rounded-xl border-l-2 border-transparent hover:border-soul-500 transition duration-300 group flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="font-heading text-xl font-bold text-white group-hover:text-soul-300 transition">${r.name}</h3>
+                            <span class="text-xs px-2 py-1 bg-white/5 rounded text-gray-400 border border-white/5">${r.type}</span>
+                        </div>
+                        ${traitsHtml}
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed flex-grow text-justify">${r.desc}</p>
+                        <div class="mt-auto pt-4 border-t border-white/5">
+                            <div class="text-accent-cyan text-xs font-mono uppercase tracking-wider font-bold">Bonus: ${r.stat}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Adventures (UPDATED with onclick)
+            const aGrid = document.getElementById('adventures-grid');
+            adventures.forEach((adv, index) => {
+                aGrid.innerHTML += `
+                    <div class="glass rounded-2xl overflow-hidden group cursor-pointer hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] transition duration-500">
+                        <div class="h-32 bg-gradient-to-br ${adv.color} relative p-6 flex items-end">
+                            <div class="absolute top-0 right-0 p-4 opacity-20 text-6xl group-hover:scale-110 transition duration-500">🐉</div>
+                            <h3 class="font-heading text-2xl font-bold text-white relative z-10 shadow-black drop-shadow-lg">${adv.title}</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-xs font-bold px-2 py-1 bg-white/10 rounded text-soul-300 border border-soul-500/30">Nível ${adv.level}</span>
+                                <span class="text-xs text-gray-500 uppercase tracking-widest">${adv.theme}</span>
+                            </div>
+                            <p class="text-gray-400 text-sm leading-relaxed mb-4">${adv.desc}</p>
+                            <button onclick="openAdventure(${index})" class="w-full py-2 rounded bg-white/5 hover:bg-soul-600 text-soul-300 hover:text-white transition text-xs font-bold uppercase tracking-wider border border-white/5 hover:border-soul-400">Ver Detalhes</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Classes Sidebar
+            const cList = document.getElementById('class-list');
+            const sortedClasses = Object.keys(classes).sort();
+            
+            sortedClasses.forEach(c => {
+                const btn = document.createElement('button');
+                const icon = classes[c].icon.length > 2 ? '🛡️' : classes[c].icon;
+                btn.className = "w-full text-left px-5 py-4 rounded-lg bg-white/5 hover:bg-soul-500 hover:text-white text-gray-400 transition duration-300 flex justify-between items-center group mb-2 border border-transparent hover:border-accent-cyan/30";
+                btn.innerHTML = `<div class="flex items-center gap-3"><span class="text-xl opacity-70">${icon}</span> <span class="font-heading font-semibold">${c}</span></div> <span class="opacity-0 group-hover:opacity-100 transition text-accent-cyan">→</span>`;
+                btn.onclick = () => loadClass(c);
+                cList.appendChild(btn);
+            });
+        }
+
+        function loadClass(name) {
+            const data = classes[name];
+            const view = document.getElementById('class-detail');
+            const icon = data.icon.length > 2 ? '🛡️' : data.icon;
+
+            view.innerHTML = `
+                <div class="animate-fade-in relative z-10 h-full flex flex-col">
+                    <div class="flex items-start md:items-center gap-6 mb-8 border-b border-white/10 pb-6">
+                        <div class="text-5xl bg-gradient-to-br from-soul-800 to-black w-24 h-24 rounded-2xl flex items-center justify-center shadow-lg border border-soul-500/30 text-glow">${icon}</div>
+                        <div>
+                            <h3 class="font-heading text-5xl text-white font-bold tracking-tight mb-2">${name}</h3>
+                            <div class="flex flex-wrap gap-3">
+                                <span class="px-3 py-1 bg-soul-500/20 text-soul-300 text-xs font-mono rounded border border-soul-500/30">DV: ${data.hd}</span>
+                                <span class="px-3 py-1 bg-accent-cyan/10 text-accent-cyan text-xs font-mono rounded border border-accent-cyan/30">Atributo: ${data.primary}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="prose prose-invert max-w-none mb-8">
+                        <p class="text-lg text-gray-300 font-light leading-relaxed border-l-4 border-soul-500 pl-6 italic">
+                            "${data.desc}"
+                        </p>
+                    </div>
+
+                    <div class="mt-auto">
+                        <h4 class="text-white font-heading text-xl mb-6 flex items-center gap-3">
+                            <span class="w-2 h-8 bg-accent-cyan rounded-full shadow-[0_0_10px_#22d3ee]"></span> Arquétipos Sagrados
+                        </h4>
+                        <div class="grid grid-cols-1 gap-4">
+                            ${data.subs.map(s => `
+                                <div class="p-5 bg-black/40 border border-white/5 rounded-xl text-gray-300 hover:border-soul-500 hover:bg-soul-900/30 transition group">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-soul-500 group-hover:text-accent-cyan transition text-lg">✦</span> 
+                                        <h5 class="font-bold text-white text-lg">${s.name}</h5>
+                                    </div>
+                                    <p class="text-sm text-gray-400 pl-6 leading-relaxed">${s.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- ADVENTURE MODAL LOGIC (NEW) ---
+        function openAdventure(index) {
+            const adv = adventures[index];
+            if (!adv) return;
+
+            document.getElementById('modal-title').textContent = adv.title;
+            document.getElementById('modal-level').textContent = "Nível " + adv.level;
+            document.getElementById('modal-theme').textContent = adv.theme;
+            document.getElementById('modal-desc').textContent = adv.desc;
+            
+            // Show Modal
+            const modal = document.getElementById('adventure-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('open');
+            }, 10);
+        }
+
+        function closeAdventure() {
+            const modal = document.getElementById('adventure-modal');
+            modal.classList.remove('open');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function generateHook() {
+            const h = hooks[Math.floor(Math.random() * hooks.length)];
+            const el = document.getElementById('hook-display');
+            el.innerHTML = `<span class="animate-pulse text-soul-300">${h}</span>`;
+            setTimeout(() => el.innerHTML = h, 500);
+        }
+
+        function generateNPC() {
+            const names = ["Valeros", "Nyx", "Caelum", "Seraph", "Vesper", "Draven", "Lilith", "Orion"];
+            const traits = ["Paranoico", "Sábio", "Ganancioso", "Leal", "Covarde", "Místico", "Bêbado"];
+            
+            const n = names[Math.floor(Math.random() * names.length)];
+            const r = races[Math.floor(Math.random() * races.length)].name;
+            const t = traits[Math.floor(Math.random() * traits.length)];
+
+            document.getElementById('npc-display').innerHTML = `
+                <div class="flex justify-between border-b border-gray-800 pb-2 animate-fade-in items-center">
+                     <span class="text-gray-500 text-xs uppercase tracking-wide">Nome</span>
+                     <span class="text-accent-cyan font-bold font-heading text-sm">${n}</span>
+                 </div>
+                 <div class="flex justify-between border-b border-gray-800 pb-2 animate-fade-in items-center">
+                     <span class="text-gray-500 text-xs uppercase tracking-wide">Raça</span>
+                     <span class="text-white text-sm">${r}</span>
+                 </div>
+                 <div class="flex justify-between animate-fade-in items-center">
+                     <span class="text-gray-500 text-xs uppercase tracking-wide">Alma</span>
+                     <span class="text-soul-300 italic text-sm">${t}</span>
+                 </div>
+            `;
+        }
+
+        function rollDice(sides) {
+            const el = document.getElementById('dice-result');
+            const log = document.getElementById('history-log');
+            
+            let counter = 0;
+            const interval = setInterval(() => {
+                el.innerText = Math.floor(Math.random() * sides) + 1;
+                counter++;
+                if(counter > 10) {
+                    clearInterval(interval);
+                    const final = Math.floor(Math.random() * sides) + 1;
+                    
+                    // Crit colors
+                    if(sides === 20 && final === 20) el.className = "relative z-10 text-8xl font-heading font-bold text-accent-cyan drop-shadow-[0_0_35px_rgba(34,211,238,1)] scale-125 transition-all duration-300";
+                    else if(sides === 20 && final === 1) el.className = "relative z-10 text-8xl font-heading font-bold text-red-600 drop-shadow-[0_0_35px_rgba(220,38,38,1)] scale-90 transition-all duration-300";
+                    else el.className = "relative z-10 text-8xl font-heading font-bold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]";
+
+                    el.innerText = final;
+                    log.innerHTML = `<span class="text-soul-400 uppercase tracking-widest text-xs">Destino:</span> D${sides} = <strong class="text-white">${final}</strong>`;
+                }
+            }, 50);
+        }
+
+        // --- CHAT LOGIC (REAL AI) ---
+        function handleChatKey(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessageToChat('user', msg);
+            input.value = '';
+
+            const chatContainer = document.getElementById('chat-messages');
+            
+            // Show typing indicator
+            const typingId = 'typing-' + Date.now();
+            chatContainer.innerHTML += `
+                <div id="${typingId}" class="flex items-start gap-3 animate-pulse">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-lg">AI</div>
+                    <div class="bg-soul-800/80 p-3 rounded-2xl rounded-tl-none border border-white/5 text-sm text-gray-400 italic">
+                        O Oráculo está consultando os planos...
+                    </div>
+                </div>
+            `;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                // Using gemini-2.5-flash for speed
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Você é o Oráculo, um assistente sábio, criativo e imersivo para Mestres de RPG de Dungeons & Dragons 5ª Edição. 
+                                Ajude com regras, criação de histórias, NPCs, monstros e ideias de campanha.
+                                Responda sempre em Português do Brasil. Seja conciso mas criativo.
+                                
+                                Usuário: ${msg}`
+                            }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) throw new Error('Falha na conexão com a API');
+
+                const data = await response.json();
+                
+                // Remove typing indicator
+                const typingEl = document.getElementById(typingId);
+                if(typingEl) typingEl.remove();
+
+                if (data.candidates && data.candidates[0].content) {
+                    let reply = data.candidates[0].content.parts[0].text;
+                    
+                    // Simple formatting: Bold and Line Breaks
+                    reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-accent-cyan">$1</strong>');
+                    reply = reply.replace(/\n/g, '<br>');
+                    
+                    addMessageToChat('ai', reply);
+                } else {
+                    addMessageToChat('ai', "O Oráculo está confuso. (Erro: Resposta vazia da API). Verifique sua chave.");
+                }
+
+            } catch (error) {
+                const typingEl = document.getElementById(typingId);
+                if(typingEl) typingEl.remove();
+                addMessageToChat('ai', "A conexão com os planos falhou. (Erro de Rede ou API Key inválida)");
+                console.error(error);
+            }
+        }
+
+        function addMessageToChat(sender, text) {
+            const chatContainer = document.getElementById('chat-messages');
+            let html = '';
+
+            if (sender === 'user') {
+                html = `
+                    <div class="flex items-start gap-3 justify-end">
+                        <div class="bg-soul-500 p-3 rounded-2xl rounded-tr-none text-sm text-white shadow-lg shadow-soul-500/10 max-w-[80%]">
+                            ${text}
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-700 flex-shrink-0 flex items-center justify-center text-xs text-white border border-gray-600">You</div>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-lg">AI</div>
+                        <div class="bg-soul-800/80 p-3 rounded-2xl rounded-tl-none border border-white/5 text-sm text-gray-200 shadow-md max-w-[80%]">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            chatContainer.innerHTML += html;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-lg">AI</div>
+                    <div class="bg-soul-800/80 p-3 rounded-2xl rounded-tl-none border border-white/5 text-sm text-gray-200 shadow-md">
+                        Chat limpo. Como posso ajudar agora?
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize with expanded data
+        initData();
+        // Load Barbarian by default as it is first alphabetically
+        loadClass("Bárbaro");
+    </script>
+</body>
+</html>
