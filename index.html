@@ -23,6 +23,7 @@
                         accent: {
                             gold: '#ffd700',
                             cyan: '#22d3ee',
+                            red: '#ef4444', // For Bosses
                         }
                     },
                     fontFamily: {
@@ -88,6 +89,12 @@
         #adventure-modal.open #modal-content {
             transform: scale(1);
         }
+        /* Tab Active State */
+        .tab-active {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: white;
+        }
     </style>
 </head>
 <body class="font-body min-h-screen flex flex-col selection:bg-soul-500 selection:text-white">
@@ -109,6 +116,7 @@
                 <button onclick="showSection('home')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Início</button>
                 <button onclick="showSection('races')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Raças</button>
                 <button onclick="showSection('classes')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Classes</button>
+                <button onclick="showSection('bestiary')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-accent-red transition whitespace-nowrap text-accent-red font-bold">Bestiário</button>
                 <button onclick="showSection('backgrounds')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap text-soul-300">Antecedentes</button>
                 <button onclick="showSection('adventures')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap text-accent-cyan">Aventuras</button>
                 <button onclick="showSection('campaigns')" class="nav-btn px-3 py-1 text-sm md:text-base hover:text-soul-400 transition whitespace-nowrap">Mestre</button>
@@ -130,7 +138,7 @@
                 Crie sua Lenda
             </h2>
             <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mb-12 font-light">
-                O grimório definitivo para mestres e jogadores. Explore raças, classes detalhadas, aventuras oficiais e forje o destino do seu grupo.
+                O grimório definitivo para mestres e jogadores. Explore raças, classes detalhadas, um bestiário mortal e forje o destino do seu grupo.
             </p>
             
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl">
@@ -144,10 +152,10 @@
                     <h3 class="font-heading text-xl font-bold text-white mb-2">Classes</h3>
                     <p class="text-sm text-gray-400">Paladinos, druidas e heróis lendários.</p>
                 </div>
-                 <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('adventures')">
-                    <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">🗺️</div>
-                    <h3 class="font-heading text-xl font-bold text-white mb-2">Aventuras</h3>
-                    <p class="text-sm text-gray-400">Campanhas oficiais para seu grupo.</p>
+                 <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('bestiary')">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">👹</div>
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">Bestiário</h3>
+                    <p class="text-sm text-gray-400">Bosses, monstros e criaturas.</p>
                 </div>
                 <div class="glass p-8 rounded-2xl cursor-pointer card-hover group" onclick="showSection('campaigns')">
                     <div class="text-4xl mb-4 group-hover:scale-110 transition duration-300">🤖</div>
@@ -201,6 +209,46 @@
             </div>
         </section>
 
+        <!-- BESTIARY SECTION (NEW) -->
+        <section id="bestiary" class="hidden">
+            <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-heading text-4xl text-white">Bestiário de Dimion</h2>
+                    <p class="text-accent-red text-sm">Os horrores que aguardam nas trevas</p>
+                </div>
+                <div class="text-3xl opacity-50">👹</div>
+            </div>
+
+            <!-- Bestiary Navigation -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button onclick="filterBestiary('boss')" id="btn-boss" class="px-6 py-2 rounded-full border border-gray-700 text-gray-400 hover:text-white hover:border-accent-red transition bg-black/30 font-heading">
+                    💀 BOSSES
+                </button>
+                <button onclick="filterBestiary('monsters')" id="btn-monsters" class="px-6 py-2 rounded-full border border-gray-700 text-gray-400 hover:text-white hover:border-purple-500 transition bg-black/30 font-heading">
+                    👁️ MONSTROS
+                </button>
+                <button onclick="filterBestiary('creatures')" id="btn-creatures" class="px-6 py-2 rounded-full border border-gray-700 text-gray-400 hover:text-white hover:border-green-500 transition bg-black/30 font-heading">
+                    🐾 CRIATURAS
+                </button>
+            </div>
+
+            <!-- Grids -->
+            <div id="bestiary-content" class="min-h-[500px]">
+                <!-- Bosses Grid -->
+                <div id="grid-boss" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                    <!-- JS Populated -->
+                </div>
+                <!-- Monsters Grid -->
+                <div id="grid-monsters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden animate-fade-in">
+                    <!-- JS Populated -->
+                </div>
+                <!-- Creatures Grid -->
+                <div id="grid-creatures" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden animate-fade-in">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+        </section>
+
         <!-- BACKGROUNDS SECTION -->
         <section id="backgrounds" class="hidden">
             <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
@@ -215,7 +263,7 @@
             </div>
         </section>
 
-        <!-- OFFICIAL ADVENTURES SECTION (NEW) -->
+        <!-- OFFICIAL ADVENTURES SECTION -->
         <section id="adventures" class="hidden">
             <div class="flex items-end justify-between mb-8 border-b border-gray-800 pb-4">
                 <div>
@@ -301,7 +349,7 @@
                         <div class="flex items-start gap-3">
                             <div class="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 flex-shrink-0 flex items-center justify-center text-xs text-white shadow-lg">AI</div>
                             <div class="bg-soul-800/80 p-3 rounded-2xl rounded-tl-none border border-white/5 text-sm text-gray-200 shadow-md">
-                                Olá, Mestre. Eu sou o Oráculo. Posso ajudar a criar encontros, descrever locais ou consultar regras. Minha conexão com os planos está ativa (API Conectada).
+                                Olá, Mestre. Eu sou o Oráculo. Posso ajudar a criar encontros, descrever locais ou consultar regras. Minha conexão com os planos está ativa.
                             </div>
                         </div>
                     </div>
@@ -383,7 +431,91 @@
         // --- API & SYSTEM ---
         const API_KEY = ""; // Key is provided by the environment
 
-        // --- DATABASE EXPANDED ---
+        // --- BESTIARY DATA (EXPANDED) ---
+        const bestiary = {
+            boss: [
+                // DEUSES & ARQUIDEMÔNIOS
+                { name: "Tiamat", title: "A Rainha Dragão", cr: "CR 30", desc: "A deusa de cinco cabeças presa nos Nove Infernos. Imune a magias de baixo nível, cospe fogo, raio, veneno, ácido e gelo.", type: "Arquidemônio" },
+                { name: "Vecna", title: "O Arquilich", cr: "CR 26", desc: "O deus dos segredos. Comanda o Livro da Escuridão Vil e pode alterar a realidade. Seus artefatos (Mão e Olho) são lendários.", type: "Morto-Vivo" },
+                { name: "Lolth", title: "A Rainha Aranha", cr: "CR 24", desc: "Deusa caótica dos Drow. Assume a forma de uma bela elfa ou de uma aranha monstruosa. Traiçoeira e cruel.", type: "Divindade" },
+                { name: "Asmodeus", title: "Lorde dos Nove", cr: "CR 30+", desc: "O governante supremo dos Nove Infernos. Um mestre da manipulação, contratos e leis divinas. Raramente luta, mas é invencível se o fizer.", type: "Diabo" },
+                { name: "Orcus", title: "Príncipe dos Mortos-Vivos", cr: "CR 26", desc: "Lorde Demônio do Abismo que empunha a Varinha de Orcus. Deseja transformar todo o multiverso em um cemitério silencioso.", type: "Demônio" },
+                { name: "Demogorgon", title: "Príncipe dos Demônios", cr: "CR 26", desc: "O suserano do Abismo com duas cabeças, Aameul e Hethradiah. Sua presença induz loucura instantânea.", type: "Demônio" },
+                { name: "Zariel", title: "Arquiduquesa de Avernus", cr: "CR 26", desc: "Um anjo caído consumido pela fúria da Guerra de Sangue. Lidera exércitos infernais com espada de fogo e asas queimadas.", type: "Diabo" },
+                
+                // VILÕES LENDÁRIOS
+                { name: "Strahd von Zarovich", title: "O Conde Vampiro", cr: "CR 15", desc: "O mestre de Ravenloft. Um gênio tático e necromante que controla a terra, o clima e as bestas de Barovia.", type: "Morto-Vivo" },
+                { name: "Acererak", title: "O Lich Eterno", cr: "CR 23", desc: "Viaja entre planos criando masmorras mortais (Tumba dos Horrores) para colher almas e alimentar seus experimentos.", type: "Morto-Vivo" },
+                { name: "Xanathar", title: "O Chefe do Crime", cr: "CR 13", desc: "Um Beholder paranoico que governa o submundo de Waterdeep. Protege seu peixinho dourado Sylgar com desintegração.", type: "Aberração" },
+                { name: "Halaster Blackcloak", title: "O Mago Louco", cr: "CR 23", desc: "O criador da Undermountain. Vive há milênios em sua masmorra, insano e incrivelmente poderoso.", type: "Humanoide" },
+                { name: "Lord Soth", title: "Cavaleiro da Rosa Negra", cr: "CR 19", desc: "Um cavaleiro da morte de Dragonlance. Amaldiçoado a viver eternamente lembrando de seus pecados.", type: "Morto-Vivo" },
+                
+                // DRAGÕES & BESTAS SUPREMAS
+                { name: "Tarrasque", title: "Fim do Mundo", cr: "CR 30", desc: "Uma máquina de destruição irracional. Devora cidades inteiras e reflete magia com sua carapaça.", type: "Monstruosidade" },
+                { name: "Klauth", title: "Velho Snarl", cr: "CR 25", desc: "Um dos dragões vermelhos mais antigos de Faerûn. Usa varinhas mágicas presas às suas asas.", type: "Dragão" },
+                { name: "Iymrith", title: "A Desgraça do Deserto", cr: "CR 23", desc: "Uma dragão azul anciã e feiticeira poderosa que manipula impérios gigantes das areias.", type: "Dragão" }
+            ],
+            monsters: [
+                // CLÁSSICOS & PERIGOSOS
+                { name: "Beholder", title: "Observador", cr: "CR 13", desc: "Esfera de carne com 11 olhos. Cada olho dispara um raio diferente (morte, petrificação, charme). O olho central anula magia.", type: "Aberração" },
+                { name: "Mind Flayer", title: "Illithid", cr: "CR 7", desc: "Devoradores de cérebros psíquicos. Escravizam raças inteiras e podem atordoar grupos inteiros com uma onda mental.", type: "Aberração" },
+                { name: "Lich", title: "Mago Morto-Vivo", cr: "CR 21", desc: "Magos que prenderam sua alma em um filactério. Mestres da magia arcana e imortais até que o filactério seja destruído.", type: "Morto-Vivo" },
+                { name: "Vampiro", title: "Lorde da Noite", cr: "CR 13", desc: "Predadores charmosos e mortais. Regeneram vida, mudam de forma e controlam proles de vampiros menores.", type: "Morto-Vivo" },
+                { name: "Múmia Real", title: "Guardião da Tumba", cr: "CR 15", desc: "Antigos faraós ou sacerdotes. Sua aura causa medo paralisante e seu toque apodrece a carne.", type: "Morto-Vivo" },
+                { name: "Cavaleiro da Morte", title: "Paladino Caído", cr: "CR 17", desc: "Guerreiros esqueléticos que mantêm suas habilidades marciais e comandam esferas de fogo infernal.", type: "Morto-Vivo" },
+                
+                // GIGANTES & DRAGÕES
+                { name: "Dragão Vermelho", title: "Ancião", cr: "CR 24", desc: "O ápice dos dragões cromáticos. Vivem em vulcões, cospem fogo e são a encarnação da ganância.", type: "Dragão" },
+                { name: "Gigante da Tempestade", title: "Oráculo", cr: "CR 13", desc: "Os mais poderosos dos gigantes. Vivem nas nuvens ou fundos oceânicos e leem o futuro nos raios.", type: "Gigante" },
+                { name: "Gigante do Fogo", title: "Ferreiro Mestre", cr: "CR 9", desc: "Mestres da forja e da guerra. Vestem armaduras pesadas e escravizam raças menores.", type: "Gigante" },
+                { name: "Hydra", title: "Cabeças Múltiplas", cr: "CR 8", desc: "Corte uma cabeça, duas nascem no lugar. Um monstro de pântano voraz e regenerativo.", type: "Monstruosidade" },
+                
+                // OUTROS PLANOS & ABERRAÇÕES
+                { name: "Balor", title: "General Abissal", cr: "CR 19", desc: "Demônio de fogo e sombra armado com chicote flamejante e espada. Explode ao morrer.", type: "Demônio" },
+                { name: "Pit Fiend", title: "General Infernal", cr: "CR 20", desc: "Diabo supremo de hierarquia militar. Comanda medo, fogo e veneno.", type: "Diabo" },
+                { name: "Rakshasa", title: "Espírito Maligno", cr: "CR 13", desc: "Demônios tigres com mãos invertidas. Imunes a magias de baixo nível e mestres da ilusão.", type: "Demônio" },
+                { name: "Aboleth", title: "Mestre das Profundezas", cr: "CR 10", desc: "Seres aquáticos anteriores aos deuses. Escravizam mentes e transmitem doenças com seus tentáculos.", type: "Aberração" },
+                { name: "Slaad", title: "Caos Encarnado", cr: "CR 5-10", desc: "Criaturas do Limbo parecidas com sapos. Implantam ovos em hospedeiros vivos.", type: "Aberração" },
+                
+                // MASMORRAS
+                { name: "Cubo Gelatinoso", title: "Limpeza de Dungeon", cr: "CR 2", desc: "Transparente e ácido. Engolfa aventureiros desavisados em corredores estreitos.", type: "Lodo" },
+                { name: "Mimic", title: "Baú Falso", cr: "CR 2", desc: "Predador adesivo que se disfarça de objeto. O pesadelo de todo aventureiro ganancioso.", type: "Monstruosidade" },
+                { name: "Roper", title: "Pedra Viva", cr: "CR 5", desc: "Parece uma estalagmite até que seus tentáculos grudentos agarram você e o arrastam para sua boca.", type: "Monstruosidade" },
+                { name: "Umber Hulk", title: "Escavador", cr: "CR 5", desc: "Insetoide gigante que escava túneis. Seu olhar confunde a mente de quem o encara.", type: "Monstruosidade" }
+            ],
+            creatures: [
+                // PEQUENAS AMEAÇAS & BANDOS
+                { name: "Goblin", title: "Saqueador", cr: "CR 1/4", desc: "Pequenos, cruéis e covardes. Perigosos em números e mestres em armadilhas e fugas rápidas.", type: "Goblinóide" },
+                { name: "Kobold", title: "Servo de Dragão", cr: "CR 1/8", desc: "Reptilianos frágeis que adoram dragões. Suas táticas de bando e armadilhas são lendárias.", type: "Humanoide" },
+                { name: "Orc", title: "Guerreiro Tribal", cr: "CR 1/2", desc: "Bárbaros selvagens que vivem para a guerra e conquista em nome de Gruumsh.", type: "Humanoide" },
+                { name: "Hobgoblin", title: "Soldado", cr: "CR 1/2", desc: "Goblins disciplinados e marciais. Lutam em formação e são estrategistas competentes.", type: "Goblinóide" },
+                { name: "Bugbear", title: "Assassino Silencioso", cr: "CR 1", desc: "Primos grandes e peludos dos goblins. Mestres da furtividade e ataques surpresa.", type: "Goblinóide" },
+                { name: "Gnoll", title: "Hiena Voraz", cr: "CR 1/2", desc: "Hienas humanoides demoníacas que nunca param de comer e matar.", type: "Humanoide" },
+                
+                // MORTOS-VIVOS COMUNS
+                { name: "Esqueleto", title: "Autômato de Osso", cr: "CR 1/4", desc: "Restos animados. Obedecem ordens literais e não sentem medo ou dor.", type: "Morto-Vivo" },
+                { name: "Zumbi", title: "Carne Podre", cr: "CR 1/4", desc: "Lentos e resistentes. Difíceis de derrubar definitivamente devido à sua resiliência morta-viva.", type: "Morto-Vivo" },
+                { name: "Ghoul", title: "Devorador de Carne", cr: "CR 1", desc: "Mortos-vivos famintos cujas garras paralisam os vivos para serem comidos frescos.", type: "Morto-Vivo" },
+                { name: "Shadow", title: "Ladrão de Força", cr: "CR 1/2", desc: "Sombras vivas que drenam a força vital de suas vítimas. Mortais se não detectadas.", type: "Morto-Vivo" },
+                { name: "Wight", title: "Guerreiro Amaldiçoado", cr: "CR 3", desc: "Mortos-vivos inteligentes e marciais que comandam zumbis sob seu serviço.", type: "Morto-Vivo" },
+                
+                // FLORESTA & SELVAGEM
+                { name: "Lobo", title: "Matilha", cr: "CR 1/4", desc: "Predadores eficientes que trabalham em equipe para derrubar presas maiores.", type: "Besta" },
+                { name: "Urso-Coruja", title: "Fera Híbrida", cr: "CR 3", desc: "Corpo de urso, cabeça de coruja. Temperamento horrível e força brutal.", type: "Monstruosidade" },
+                { name: "Harpia", title: "Canção Maldita", cr: "CR 1", desc: "Mulheres-pássaro que atraem viajantes com sua canção mágica para devorá-los.", type: "Monstruosidade" },
+                { name: "Troll", title: "Regenerador", cr: "CR 5", desc: "Gigantes famintos que curam qualquer ferimento, exceto os causados por fogo ou ácido.", type: "Gigante" },
+                { name: "Ogre", title: "Bruto", cr: "CR 2", desc: "Gigantes estúpidos e fortes. Frequentemente usados como força bruta por orcs ou goblins.", type: "Gigante" },
+                { name: "Basilisco", title: "Olhar de Pedra", cr: "CR 3", desc: "Lagartos de oito patas. Encarar seus olhos transforma a vítima em pedra permanentemente.", type: "Monstruosidade" },
+                
+                // ESPECIAIS & ESTRANHOS
+                { name: "Rust Monster", title: "Pesadelo de Ferreiro", cr: "CR 1/2", desc: "Insetoide que corrói e come metais. O terror de guerreiros com armaduras caras.", type: "Monstruosidade" },
+                { name: "Stirge", title: "Mosquito Gigante", cr: "CR 1/8", desc: "Pequenos monstros voadores que se fixam na vítima e sugam sangue.", type: "Besta" },
+                { name: "Blink Dog", title: "Cão Teleportador", cr: "CR 1/4", desc: "Cães feéricos leais e bondosos que podem se teleportar curtas distâncias.", type: "Feérico" },
+                { name: "Imp", title: "Espião Infernal", cr: "CR 1", desc: "Diabos minúsculos que ficam invisíveis e servem como familiares ou espiões.", type: "Diabo" }
+            ]
+        };
+
+        // ... existing adventures, backgrounds, races, classes arrays ...
         
         const adventures = [
             {
@@ -427,6 +559,20 @@
                 theme: "Sobrevivência & Horror",
                 color: "from-blue-400 to-slate-900",
                 desc: "No Vale do Vento Gélido, a escuridão reina. Auril, a Donzela Gélida, lançou um inverno eterno sobre a região. Sobreviva ao frio, bestas terríveis e segredos enterrados no gelo."
+            },
+            {
+                title: "Wild Beyond the Witchlight",
+                level: "1-8",
+                theme: "Feérico & Místico",
+                color: "from-purple-600 to-pink-900",
+                desc: "Uma aventura no Plano das Fadas. O circo Witchlight chegou à cidade, trazendo mistérios e uma passagem para o domínio de Prismeer."
+            },
+            {
+                title: "Spelljammer Academy",
+                level: "1-5",
+                theme: "Espaço & Magia",
+                color: "from-indigo-900 to-blue-600",
+                desc: "Treine para se tornar um explorador do Mar Astral. Enfrente piratas githyanki e descubra os segredos das naves vivas que viajam entre os mundos."
             }
         ];
 
@@ -478,72 +624,453 @@
                 skill: "Atletismo, Sobrevivência",
                 desc: "Você cresceu nas terras selvagens, longe da civilização e do conforto da cidade e da tecnologia. Você testemunhou a migração de manadas maiores que florestas inteiras, sobreviveu a um clima mais extremo que qualquer habitante da cidade poderia compreender.",
                 feature: "Viajante: Você tem uma excelente memória para mapas e geografia, e você sempre pode encontrar comida e água para si e até mais cinco pessoas."
+            },
+            {
+                name: "Charlatão",
+                skill: "Enganação, Prestidigitação",
+                desc: "Você sempre teve um jeito com as pessoas. Você sabe o que as faz funcionar, você pode provocar seus desejos ou medos. Você tem um esquema favorito e uma identidade falsa bem estabelecida.",
+                feature: "Identidade Falsa: Você criou uma segunda identidade que inclui documentos, conhecidos e disfarces."
+            },
+            {
+                name: "Marinheiro",
+                skill: "Atletismo, Percepção",
+                desc: "Você navegou em navios por anos. Você enfrentou tempestades terríveis, monstros das profundezas e aqueles que querem afundar seu ofício. O mar é seu lar, e o convés é seu chão.",
+                feature: "Passagem de Navio: Você pode garantir passagem gratuita em um navio de mar para você e seus companheiros de aventura."
             }
         ];
 
         const races = [
+            // --- OFICIAIS PHB ---
             { 
                 name: "Humano", 
                 stat: "+1 em Todos", 
-                desc: "Os humanos são os mais adaptáveis e ambiciosos entre as raças comuns. Sua cultura e aparência variam enormemente, e sua curta expectativa de vida os impulsiona a alcançar a glória rapidamente. Eles fundam impérios, exploram o desconhecido e inovam constantemente.", 
+                desc: "Os humanos são os mais adaptáveis e ambiciosos entre as raças comuns. Sua cultura e aparência variam enormemente.", 
                 type: "Comum",
                 traits: ["Versatilidade", "Aprendizado Rápido"]
             },
             { 
                 name: "Elfo", 
                 stat: "+2 Destreza", 
-                desc: "Seres mágicos de graça sobrenatural, vivendo em lugares de beleza etérea. Os elfos amam a natureza e a magia, a arte e a música. Eles vivem por séculos, o que lhes dá uma perspectiva distante e paciente sobre os eventos mundanos.", 
+                desc: "Seres mágicos de graça sobrenatural, vivendo em lugares de beleza etérea. Vivem séculos e amam a arte.", 
                 type: "Feérico",
-                traits: ["Visão no Escuro", "Sentidos Aguçados", "Ancestral Feérico"]
+                traits: ["Visão no Escuro", "Sentidos Aguçados", "Transe"]
             },
             { 
                 name: "Anão", 
                 stat: "+2 Constituição", 
-                desc: "Reinos ricos em grandeza antiga, salões esculpidos nas raízes das montanhas. Os anões são guerreiros sólidos, mineradores e ferreiros de lendas. Eles valorizam a tradição, o clã e a honra acima de tudo, e possuem uma resistência natural a venenos e magia.", 
+                desc: "Guerreiros e ferreiros das montanhas. Valorizam a tradição, o clã e a honra acima de tudo.", 
                 type: "Montanha",
                 traits: ["Resiliência Anã", "Treinamento em Combate", "Trabalho em Pedra"]
             },
             { 
                 name: "Halfling", 
                 stat: "+2 Destreza", 
-                desc: "Os pequenos halflings sobrevivem em um mundo cheio de criaturas maiores evitando serem notados ou, quando isso não é possível, evitando o conflito. Eles amam a paz, a comida, a lareira e o lar, mas sua sorte inata e curiosidade muitas vezes os levam a aventuras.", 
+                desc: "Pequenos e pacíficos, amam o conforto do lar, mas sua sorte inata muitas vezes os salva em aventuras.", 
                 type: "Pequeno",
                 traits: ["Sortudo", "Bravura", "Agilidade Halfling"]
             },
             { 
                 name: "Draconato", 
                 stat: "+2 Força, +1 Carisma", 
-                desc: "Nascidos de dragões, como o nome proclama, os draconatos caminham orgulhosamente por um mundo que os recebe com admiração temerosa. Eles valorizam o clã acima da própria vida e carregam o sopro elemental de seus ancestrais dracônicos.", 
+                desc: "Humanoides com sangue de dragão. Orgulhosos e fortes, carregam o sopro de seus ancestrais.", 
                 type: "Dracônico",
                 traits: ["Ataque de Sopro", "Resistência a Dano"]
             },
             { 
                 name: "Gnomo", 
                 stat: "+2 Inteligência", 
-                desc: "Um zumbido constante de atividade permeia as tocas onde os gnomos formam suas comunidades. Eles exploram o mundo com entusiasmo desenfreado, inventando, explorando e brincando. Sua magia inata é sutil, mas sua inteligência é afiada como navalha.", 
+                desc: "Inventores e ilusionistas vibrantes que vivem em tocas. Curiosos e cheios de energia.", 
                 type: "Pequeno",
                 traits: ["Astúcia Gnômica", "Ilusionista Nato"]
             },
             { 
                 name: "Meio-Elfo", 
-                stat: "+2 Carisma, +1 em dois outros", 
-                desc: "Caminhando entre dois mundos, mas não pertencendo verdadeiramente a nenhum, os meio-elfos combinam a graça élfica e a inventividade humana. Eles são diplomatas naturais, errantes e aventureiros solitários com um talento inato para adaptação.", 
+                stat: "+2 Carisma, +1 em dois", 
+                desc: "Diplomatas naturais que caminham entre dois mundos, combinando graça élfica e inovação humana.", 
                 type: "Mestiço",
                 traits: ["Ancestral Feérico", "Versatilidade em Perícia"]
             },
             { 
                 name: "Meio-Orc", 
-                stat: "+2 Força, +1 Constituição", 
-                desc: "Com cicatrizes de batalha ostentadas como medalhas de orgulho, os meio-orcs buscam glória em combate. Eles sentem a fúria de Gruumsh em seu sangue, uma emoção poderosa que os impulsiona a feitos de grande força e resistência implacável.", 
+                stat: "+2 Força, +1 Cons", 
+                desc: "Guerreiros ferozes que transformam cicatrizes em orgulho. Possuem a fúria implacável dos orcs.", 
                 type: "Mestiço",
                 traits: ["Ataque Selvagem", "Resistência Implacável"]
             },
             { 
                 name: "Tiefling", 
-                stat: "+2 Carisma, +1 Inteligência", 
-                desc: "Herdeiros de uma linhagem infernal antiga, os tieflings não têm reinos próprios, vivendo dentro de terras humanas onde são temidos. Sua aparência (chifres, caudas) denuncia seu legado, mas muitos superam o preconceito com astúcia ou charme sombrio.", 
+                stat: "+2 Carisma, +1 Int", 
+                desc: "Herdeiros de um pacto infernal antigo. Chifres e caudas revelam sua herança, mas não definem seu destino.", 
                 type: "Planar",
                 traits: ["Legado Infernal", "Resistência ao Fogo", "Visão no Escuro"]
+            },
+
+            // --- VOLO'S & MORDENKAINEN & EBERRON ---
+            { 
+                name: "Aasimar", 
+                stat: "+2 Carisma", 
+                desc: "Humanos com uma centelha celestial. São campeões do bem, vigiados por guias angélicos.", 
+                type: "Planar",
+                traits: ["Mãos Curativas", "Portador da Luz", "Resistência Celestial"]
+            },
+            { 
+                name: "Aarakocra", 
+                stat: "+2 Des, +1 Sab", 
+                desc: "Povo-pássaro nativo do Plano Elemental do Ar. Preferem espaços abertos e voam com agilidade.", 
+                type: "Humanoide",
+                traits: ["Voo", "Garras", "Caminhar no Vento"]
+            },
+            { 
+                name: "Bugbear", 
+                stat: "+2 Força, +1 Des", 
+                desc: "Os primos peludos e brutais dos goblins. Nascidos para emboscadas e força bruta.", 
+                type: "Goblinóide",
+                traits: ["Membros Longos", "Ataque Surpresa", "Compleição Poderosa"]
+            },
+            { 
+                name: "Centauro", 
+                stat: "+2 Força, +1 Sab", 
+                desc: "Nômades da natureza, metade humano, metade cavalo. Velozes e fortes.", 
+                type: "Monstruosidade",
+                traits: ["Carga", "Cascos", "Sobrevivência"]
+            },
+            { 
+                name: "Changeling", 
+                stat: "+2 Carisma, +1 Outro", 
+                desc: "Mestres do disfarce que alteram sua face à vontade. Espiões e atores perfeitos.", 
+                type: "Humanoide",
+                traits: ["Mudança de Forma", "Instintos Sociais"]
+            },
+            { 
+                name: "Firbolg", 
+                stat: "+2 Sab, +1 Força", 
+                desc: "Gigantes gentis das florestas. Preferem a discrição e usam magia para se esconder.", 
+                type: "Gigante",
+                traits: ["Magia Firbolg", "Fala com Bestas e Plantas"]
+            },
+            { 
+                name: "Genasi", 
+                stat: "+2 Constituição", 
+                desc: "Herdeiros dos gênios elementais. Podem ser do Ar, Terra, Fogo ou Água.", 
+                type: "Planar",
+                traits: ["Legado Elemental", "Resistência Elemental"]
+            },
+            { 
+                name: "Githyanki", 
+                stat: "+2 Força, +1 Int", 
+                desc: "Guerreiros psíquicos do Plano Astral. Usam espadas de prata e servem sua rainha lich.", 
+                type: "Planar",
+                traits: ["Psiônica Gith", "Salto", "Mão de Mago"]
+            },
+            { 
+                name: "Goblin", 
+                stat: "+2 Des, +1 Cons", 
+                desc: "Pequenos e maliciosos. Sobrevivem sendo rápidos, furtivos e cruéis.", 
+                type: "Goblinóide",
+                traits: ["Escapar Habilidoso", "Fúria do Pequeno"]
+            },
+            { 
+                name: "Golias", 
+                stat: "+2 Força, +1 Cons", 
+                desc: "Gigantes das montanhas. Vivem em tribos onde a força determina o valor.", 
+                type: "Humanoide",
+                traits: ["Resistência de Pedra", "Compleição Poderosa"]
+            },
+            { 
+                name: "Kenku", 
+                stat: "+2 Des, +1 Sab", 
+                desc: "Homens-corvo amaldiçoados sem voz própria. Falam apenas através de mímica perfeita.", 
+                type: "Humanoide",
+                traits: ["Mimetismo", "Perito em Falsificação"]
+            },
+            { 
+                name: "Kobold", 
+                stat: "+2 Destreza", 
+                desc: "Pequenos reptilianos servos de dragões. Fracos sozinhos, letais em bando.", 
+                type: "Dracônico",
+                traits: ["Táticas de Bando", "Sensibilidade à Luz"]
+            },
+            { 
+                name: "Leonino", 
+                stat: "+2 Cons, +1 Força", 
+                desc: "Guerreiros leões orgulhosos das planícies de Oreskos. Temíveis em combate.", 
+                type: "Humanoide",
+                traits: ["Rugido Assustador", "Garras", "Velocidade"]
+            },
+            { 
+                name: "Loxodonte", 
+                stat: "+2 Cons, +1 Sab", 
+                desc: "Humanoides elefante. Sábios, leais e extremamente fortes.", 
+                type: "Humanoide",
+                traits: ["Tromba Preênsil", "Serenidade", "Armadura Natural"]
+            },
+            { 
+                name: "Minotauro", 
+                stat: "+2 Força, +1 Cons", 
+                desc: "Humanoides com cabeça de touro. Associados a labirintos e chifradas brutais.", 
+                type: "Humanoide",
+                traits: ["Chifres", "Martelar", "Imposição"]
+            },
+            { 
+                name: "Orc", 
+                stat: "+2 Força, +1 Cons", 
+                desc: "Versão jogável dos orcs. Guerreiros movidos por emoção, não necessariamente malignos.", 
+                type: "Humanoide",
+                traits: ["Adrenalina", "Compleição Poderosa"]
+            },
+            { 
+                name: "Sátiro", 
+                stat: "+2 Car, +1 Des", 
+                desc: "Foliões da natureza com pernas de bode. Amam festas e música.", 
+                type: "Feérico",
+                traits: ["Resistência à Magia", "Cabeçada", "Saltador"]
+            },
+            { 
+                name: "Tabaxi", 
+                stat: "+2 Des, +1 Car", 
+                desc: "Povo-gato ágil e curioso. Viajantes obcecados por segredos e histórias.", 
+                type: "Humanoide",
+                traits: ["Agilidade Felina", "Garras", "Escalada"]
+            },
+            { 
+                name: "Tortle", 
+                stat: "+2 Força, +1 Sab", 
+                desc: "Tartarugas humanoides nômades. Carregam suas casas nas costas.", 
+                type: "Humanoide",
+                traits: ["Casco Duro", "Prender Respiração", "Garras"]
+            },
+            { 
+                name: "Tritão", 
+                stat: "+1 For, +1 Con, +1 Car", 
+                desc: "Guardiões nobres das profundezas oceânicas. Combatem krakens e horrores.", 
+                type: "Humanoide",
+                traits: ["Anfíbio", "Controle do Ar e Água"]
+            },
+            { 
+                name: "Warforged", 
+                stat: "+2 Cons, +1 Outro", 
+                desc: "Seres de madeira e metal criados para a guerra, agora livres.", 
+                type: "Constructo",
+                traits: ["Proteção Integrada", "Não Dorme", "Resiliência"]
+            },
+            { 
+                name: "Yuan-ti", 
+                stat: "+2 Car, +1 Int", 
+                desc: "Humanoides serpente frios e calculistas. Resistentes a veneno e magia.", 
+                type: "Humanoide",
+                traits: ["Resistência à Magia", "Imunidade a Veneno"]
+            },
+
+            // --- SPELLJAMMER & FEYWILD ---
+            { 
+                name: "Fada", 
+                stat: "+2 em um, +1 em outro", 
+                desc: "Pequenas criaturas mágicas com asas. Mestres de ilusão e voo.", 
+                type: "Feérico",
+                traits: ["Voo", "Magia das Fadas"]
+            },
+            { 
+                name: "Harengon", 
+                stat: "+1 em tudo ou flex", 
+                desc: "Povo-coelho da Faeria. Energéticos e capazes de saltos incríveis.", 
+                type: "Humanoide",
+                traits: ["Pulo do Coelho", "Sentidos de Lebre", "Sorte"]
+            },
+            { 
+                name: "Plasmoid", 
+                stat: "+2 em um, +1 em outro", 
+                desc: "Seres de lodo senciência. Podem mudar de forma e espremer-se em frestas.", 
+                type: "Lodo",
+                traits: ["Amorfo", "Pseudópode", "Resistência Ácida"]
+            },
+            { 
+                name: "Thri-kreen", 
+                stat: "+2 em um, +1 em outro", 
+                desc: "Insetos humanoides com múltiplos braços e telepatia.", 
+                type: "Monstruosidade",
+                traits: ["Carapaça", "Braços Secundários", "Telepatia"]
+            },
+
+            // --- LINHAGENS GÓTICAS (VRGtR) ---
+            { 
+                name: "Dhampir", 
+                stat: "Flexível", 
+                desc: "Meio-vampiros que sentem uma fome peculiar. Andam pelas paredes.", 
+                type: "Linhagem",
+                traits: ["Mordida Vampírica", "Andar na Aranha"]
+            },
+            { 
+                name: "Hexblood", 
+                stat: "Flexível", 
+                desc: "Tocados pela magia de bruxas (Hags). Possuem coroas vivas e magia estranha.", 
+                type: "Linhagem",
+                traits: ["Magia Hex", "Token Misterioso"]
+            },
+            { 
+                name: "Reborn", 
+                stat: "Flexível", 
+                desc: "Seres que morreram e retornaram, ou foram costurados. Memórias fragmentadas.", 
+                type: "Linhagem",
+                traits: ["Natureza Imortal", "Memórias de Vidas Passadas"]
+            },
+
+            // --- NÃO OFICIAIS / POPULARES ---
+            { 
+                name: "Mousefolk", 
+                stat: "+2 Des, +1 Car", 
+                desc: "Povo-rato pequeno e corajoso (Homebrew popular).", 
+                type: "Homebrew",
+                traits: ["Furtividade", "Agilidade"]
+            },
+            { 
+                name: "Corujin (Owlin)", 
+                stat: "Flexível", 
+                desc: "Povo-coruja de Strixhaven. Planam silenciosamente na noite.", 
+                type: "Strixhaven",
+                traits: ["Voo Silencioso", "Visão no Escuro"]
+            },
+
+            // --- RAVNICA & THEROS & DRAGONLANCE ---
+            { 
+                name: "Simic Hybrid", 
+                stat: "+2 Cons, +1 Outro", 
+                desc: "Guardiões da natureza modificados magicamente com partes de animais.", 
+                type: "Híbrido",
+                traits: ["Adaptação Animal", "Visão no Escuro"]
+            },
+            { 
+                name: "Vedalken", 
+                stat: "+2 Int, +1 Sab", 
+                desc: "Seres de pele azul, lógicos e perfeccionistas. Resistentes à magia mental.", 
+                type: "Humanoide",
+                traits: ["Desapaixonado", "Precisão Incansável"]
+            },
+            { 
+                name: "Kender", 
+                stat: "Flexível", 
+                desc: "Pequenos aventureiros destemidos de Krynn. Curiosidade sobrenatural.", 
+                type: "Pequeno",
+                traits: ["Destemido", "Provocação"]
+            },
+
+            // --- MAIS SPELLJAMMER & ASTRAL ---
+            { 
+                name: "Elfo Astral", 
+                stat: "Flexível", 
+                desc: "Elfos que migraram para o Mar Astral. Vivem milhares de anos.", 
+                type: "Astral",
+                traits: ["Passo Estelar", "Transe Astral"]
+            },
+            { 
+                name: "Autognomo", 
+                stat: "Flexível", 
+                desc: "Gnomos mecânicos construídos para sobreviver no espaço.", 
+                type: "Constructo",
+                traits: ["Blindagem", "Construído para o Sucesso"]
+            },
+            { 
+                name: "Giff", 
+                stat: "+2 Força", 
+                desc: "Povo-hipopótamo espacial. Amam explosivos e armas de fogo.", 
+                type: "Humanoide",
+                traits: ["Mestre de Armas de Fogo", "Corpo Astral"]
+            },
+            { 
+                name: "Hadozee", 
+                stat: "Flexível", 
+                desc: "Símios alados que planam entre os conveses dos navios astrais.", 
+                type: "Humanoide",
+                traits: ["Planar", "Agilidade de Convés"]
+            },
+
+            // --- EBERRON & UNDERDARK EXPANDIDO ---
+            { 
+                name: "Shifter (Metamorfo)", 
+                stat: "+1 Des, +2 Outro", 
+                desc: "Humanos com um toque bestial. Podem assumir aspectos animais temporários.", 
+                type: "Humanoide",
+                traits: ["Transformação", "Instintos Selvagens"]
+            },
+            { 
+                name: "Kalashtar", 
+                stat: "+2 Sab, +1 Car", 
+                desc: "Hospedeiros de espíritos dos sonhos quori. Telepatas naturais.", 
+                type: "Humanoide",
+                traits: ["Mente Dupla", "Link Mental"]
+            },
+            { 
+                name: "Duergar", 
+                stat: "+2 Cons, +1 For", 
+                desc: "Anões cinzentos do Underdark. Mestres da psiônica e invisibilidade.", 
+                type: "Anão",
+                traits: ["Magia Duergar", "Resiliência Psíquica"]
+            },
+            { 
+                name: "Gnomo das Profundezas", 
+                stat: "+2 Int, +1 Des", 
+                desc: "Svirfneblin vivem no Underdark. Mestres da camuflagem e gemas.", 
+                type: "Gnomo",
+                traits: ["Camuflagem de Pedra", "Gnomo Astuto"]
+            },
+
+            // --- ELFOS VARIANTES (MORDENKAINEN) ---
+            { 
+                name: "Eladrin", 
+                stat: "+2 Des, +1 Car", 
+                desc: "Elfos nativos da Faeria. Mudam de estação (Primavera, Verão, etc.) e temperamento.", 
+                type: "Feérico",
+                traits: ["Passo Feérico", "Mudança de Estação"]
+            },
+            { 
+                name: "Shadar-kai", 
+                stat: "+2 Des, +1 Cons", 
+                desc: "Elfos do Shadowfell que servem a Rainha de Rapina. Sombrios e resistentes.", 
+                type: "Elfo",
+                traits: ["Teleporte das Sombras", "Resistência Necrótica"]
+            },
+            { 
+                name: "Elfo do Mar", 
+                stat: "+2 Des, +1 Cons", 
+                desc: "Elfos adaptados à vida subaquática. Amigos dos golfinhos.", 
+                type: "Elfo",
+                traits: ["Anfíbio", "Filho do Mar"]
+            },
+
+            // --- EXÓTICOS & MONSTRUOSOS ---
+            { 
+                name: "Hobgoblin", 
+                stat: "+2 Con, +1 Int", 
+                desc: "Goblinóides marciais e disciplinados. Honra e glória são tudo.", 
+                type: "Goblinóide",
+                traits: ["Treinamento Marcial", "Salvar a Face"]
+            },
+            { 
+                name: "Lizardfolk", 
+                stat: "+2 Cons, +1 Sab", 
+                desc: "Povo-lagarto pragmático. Sobrevivência é a única emoção real.", 
+                type: "Humanoide",
+                traits: ["Mordida", "Armadura Natural", "Artesão Astuto"]
+            },
+            { 
+                name: "Grung", 
+                stat: "+2 Des, +1 Cons", 
+                desc: "Pequenos sapos humanoides coloridos. Segregam veneno pela pele.", 
+                type: "Humanoide",
+                traits: ["Pele Venenosa", "Salto em Pé", "Dependência de Água"]
+            },
+            { 
+                name: "Locathah", 
+                stat: "+2 For, +1 Des", 
+                desc: "Povo-peixe resiliente e amigável. Vivem em harmonia com o mar.", 
+                type: "Humanoide",
+                traits: ["Escamas Leviatã", "Observador Astuto"]
+            },
+            { 
+                name: "Verdan", 
+                stat: "+2 Car, +1 Con", 
+                desc: "Goblins mutantes criados por caos e entropia. Mudam de tamanho.", 
+                type: "Goblinóide",
+                traits: ["Sangue Negro", "Empatia Telepática"]
             }
         ];
 
@@ -699,6 +1226,61 @@
             target.classList.remove('hidden');
             target.classList.add('animate-fade-in');
             window.scrollTo(0, 0);
+            
+            // Auto-load bestiary default if opening that tab
+            if (id === 'bestiary') {
+                filterBestiary('boss');
+            }
+        }
+
+        // --- BESTIARY LOGIC ---
+        function filterBestiary(category) {
+            // Update Buttons
+            document.getElementById('btn-boss').className = `px-6 py-2 rounded-full border border-gray-700 hover:text-white hover:border-accent-red transition bg-black/30 font-heading ${category === 'boss' ? 'tab-active text-white border-accent-red' : 'text-gray-400'}`;
+            document.getElementById('btn-monsters').className = `px-6 py-2 rounded-full border border-gray-700 hover:text-white hover:border-purple-500 transition bg-black/30 font-heading ${category === 'monsters' ? 'tab-active text-white border-purple-500' : 'text-gray-400'}`;
+            document.getElementById('btn-creatures').className = `px-6 py-2 rounded-full border border-gray-700 hover:text-white hover:border-green-500 transition bg-black/30 font-heading ${category === 'creatures' ? 'tab-active text-white border-green-500' : 'text-gray-400'}`;
+
+            // Hide all grids
+            document.getElementById('grid-boss').classList.add('hidden');
+            document.getElementById('grid-monsters').classList.add('hidden');
+            document.getElementById('grid-creatures').classList.add('hidden');
+
+            // Show selected grid and populate if empty
+            const targetGrid = document.getElementById(`grid-${category}`);
+            targetGrid.classList.remove('hidden');
+            
+            // Populate logic
+            if (targetGrid.innerHTML.trim() === '' || targetGrid.innerHTML.includes('<!-- JS Populated -->')) {
+                let html = '';
+                const data = bestiary[category];
+                
+                // Color mapping
+                let borderColor = 'border-gray-700';
+                let icon = '❓';
+                
+                if(category === 'boss') { borderColor = 'border-red-900/50 hover:border-red-500'; icon = '💀'; }
+                else if(category === 'monsters') { borderColor = 'border-purple-900/50 hover:border-purple-500'; icon = '👁️'; }
+                else { borderColor = 'border-green-900/50 hover:border-green-500'; icon = '🐾'; }
+
+                data.forEach(item => {
+                    html += `
+                    <div class="glass p-6 rounded-xl border ${borderColor} transition duration-300 group flex flex-col hover:shadow-lg hover:bg-white/5">
+                        <div class="flex justify-between items-start mb-2">
+                             <h3 class="font-heading text-xl font-bold text-white group-hover:text-soul-300 transition flex items-center gap-2">
+                                <span>${icon}</span> ${item.name}
+                             </h3>
+                             <span class="text-xs font-mono px-2 py-1 rounded bg-black/40 text-gray-400 border border-white/10">${item.cr}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-xs uppercase tracking-widest text-soul-400 font-bold">${item.title}</span>
+                            <span class="text-xs text-gray-500 ml-2">• ${item.type}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed border-t border-white/5 pt-3">${item.desc}</p>
+                    </div>
+                    `;
+                });
+                targetGrid.innerHTML = html;
+            }
         }
 
         function initData() {
